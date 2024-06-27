@@ -29,32 +29,56 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         margin-bottom: 20px;
         padding: 20px;
+        position: relative;
     }
     .metrics-row {
         display: flex;
         justify-content: space-between;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        margin-bottom: 20px;
     }
     .metric-box {
         flex: 1;
-        min-width: 200px;
-        margin: 10px;
+        max-width: 25%;
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 20px;
+        margin: 10px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
     .metric-box img {
         width: 50px;
         height: 50px;
     }
+    .attendance-row {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        margin-bottom: 20px;
+    }
+    .attendance-box {
+        flex: 1;
+        max-width: 33%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        margin: 10px;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .attendance-box canvas {
+        max-width: 150px;
+    }
     .chart {
         display: flex;
         justify-content: space-between;
         align-items: center;
-    }
-    .chart canvas {
-        max-width: 200px;
     }
     .table-wrapper {
         overflow-x: auto;
@@ -166,72 +190,124 @@
     .list-unstyled {
         padding-left: 15px;
     }
+    #calendar {
+        max-width: 100%;
+        margin-top: 20px;
+    }
+    .fc-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px; /* Add space below the toolbar */
+    }
+    .fc-toolbar-left {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .fc-toolbar-right {
+        display: flex;
+        align-items: center;
+    }
+    .fc-toolbar-title {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+    }
+    .fc-button-group {
+        display: flex;
+        flex-direction: column;
+    }
+    .fc-button {
+        font-size: 0.75em;
+        padding: 3px 6px;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        margin-bottom: 5px;
+        width: 80px;
+        height: 30px;
+    }
+    .fc-button-group .fc-button.fc-dayGridMonth-button {
+        background-color: #4caf50; /* Green for Month button */
+    }
+    .fc-button-group .fc-button.fc-timeGridWeek-button {
+        background-color: #2196f3; /* Blue for Week button */
+    }
+    .fc-button-group .fc-button.fc-timeGridDay-button {
+        background-color: #ff9800; /* Orange for Day button */
+    }
+    .fc-button-primary {
+        background-color: #6a0dad; /* Default color for other buttons */
+    }
+    .fc-button:hover {
+        opacity: 0.8;
+    }
 </style>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.css" rel="stylesheet">
 @endpush
-
-@section('sidebar')
-    @include('partials.sidebars.headmaster')
-@endsection
+@include('partials.sidebars.headmaster')
 
 @section('content')
 <div class="content-wrapper">
     <div class="left-column">
         <!-- Metric Boxes -->
         <div class="metrics-row">
-            <div class="metric-box card">
+            <div class="metric-box">
                 <div>
                     <h5>Total Students</h5>
                     <p>{{ $totalStudents }}</p>
                 </div>
                 <img src="{{ asset('images/student-avatar.png') }}" alt="Students">
             </div>
-            <div class="metric-box card">
+            <div class="metric-box">
                 <div>
                     <h5>Total Staff</h5>
                     <p>{{ $totalStaff }}</p>
                 </div>
                 <img src="{{ asset('images/staff-avatar.png') }}" alt="Staff">
             </div>
-            <div class="metric-box card">
+            <div class="metric-box">
                 <div>
                     <h5>Working Staff</h5>
-                    <p>700</p>
+                    <p>20</p>
                 </div>
                 <img src="{{ asset('images/working-staff-avatar.png') }}" alt="Working Staff">
             </div>
-            <div class="metric-box card">
+            <div class="metric-box">
                 <div>
                     <h5>This Month Events</h5>
-                    <p>9</p>
+                    <p>8</p>
                 </div>
                 <img src="{{ asset('images/calendar-avatar.png') }}" alt="Events">
             </div>
         </div>
 
         <!-- Attendance Charts -->
-        <div class="card chart">
-            <div>
-                <h5>Student Attendance</h5>
-                <p>Present:500</p>
-                <p>Absent: 70</p>
+        <div class="attendance-row">
+            <div class="attendance-box">
+                <div>
+                    <h5>Student Attendance</h5>
+                    <p>Present: 230</p>
+                    <p>Absent: 20</p>
+                </div>
+                <canvas id="studentAttendanceChart"></canvas>
             </div>
-            <canvas id="studentAttendanceChart"></canvas>
-        </div>
-        <div class="card chart">
-            <div>
-                <h5>Teacher Attendance</h5>
-                <p>Present: 58</p>
-                <p>Absent: 5</p>
+            <div class="attendance-box">
+                <div>
+                    <h5>Teacher Attendance</h5>
+                    <p>Present: 300</p>
+                    <p>Absent: 20</p>
+                </div>
+                <canvas id="teacherAttendanceChart"></canvas>
             </div>
-            <canvas id="teacherAttendanceChart"></canvas>
-        </div>
-        <div class="card chart">
-            <div>
-                <h5>Staff Attendance</h5>
-                <p>Present: 98</p>
-                <p>Absent: 5</p>
+            <div class="attendance-box">
+                <div>
+                    <h5>Staff Attendance</h5>
+                    <p>Present: 456</p>
+                    <p>Absent: 87</p>
+                </div>
+                <canvas id="staffAttendanceChart"></canvas>
             </div>
-            <canvas id="staffAttendanceChart"></canvas>
         </div>
 
         <!-- Student Directory Table -->
@@ -281,10 +357,9 @@
         <a href="#" class="link-button">New Admission</a>
 
         <!-- My Progress Card -->
-        <div class="card">
+        <div class="card" style="height: 600px;">
             <h5>My Progress</h5>
             <div id="calendar"></div>
-            <a href="#" class="link-button">Add Event</a>
         </div>
 
         <!-- Upcoming Events Card -->
@@ -292,7 +367,7 @@
             <h5>Upcoming Events</h5>
             <div>
                 <p>Event 1: sports</p>
-                <p>Event 2: sports</p>
+                <p>Event 2: reds</p>
             </div>
         </div>
 
@@ -306,13 +381,14 @@
 @endsection
 
 @push('scripts')
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    function toggleSubmenu(id) {
-        const submenu = document.getElementById(id);
-        submenu.classList.toggle('show');
-    }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.1/main.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+<script>
     // Initialize charts
     const studentAttendanceCtx = document.getElementById('studentAttendanceChart').getContext('2d');
     const teacherAttendanceCtx = document.getElementById('teacherAttendanceChart').getContext('2d');
@@ -365,15 +441,56 @@
         data: attendanceData,
     });
 
-    // Initialize calendar (example, replace with your actual calendar initialization)
-    const calendarEl = document.getElementById('calendar');
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        events: [
-            { title: 'Event 1', date: '2023-06-01' },
-            { title: 'Event 2', date: '2023-06-15' }
-        ]
+    // Initialize FullCalendar
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: ''
+            },
+            buttonText: {
+                today: 'Today',
+                month: 'Month',
+                week: 'Week',
+                day: 'Day'
+            },
+            customButtons: {
+                prev: {
+                    text: '<',
+                    click: function() {
+                        calendar.prev();
+                    }
+                },
+                next: {
+                    text: '>',
+                    click: function() {
+                        calendar.next();
+                    }
+                }
+            },
+            dateClick: function(info) {
+                alert('Date clicked: ' + info.dateStr);
+            }
+        });
+        calendar.render();
     });
-    calendar.render();
+
+    // Submenu toggle functionality
+    function toggleSubmenu(id) {
+        const submenu = document.getElementById(id);
+        submenu.classList.toggle('show');
+    }
+
+    document.querySelectorAll('.list-group-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const submenu = this.querySelector('.submenu');
+            if (submenu) {
+                submenu.classList.toggle('show');
+            }
+        });
+    });
 </script>
 @endpush

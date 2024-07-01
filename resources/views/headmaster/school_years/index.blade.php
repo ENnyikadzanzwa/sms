@@ -87,6 +87,80 @@
     .list-unstyled {
         padding-left: 15px;
     }
+    .content-wrapper {
+        padding: 20px;
+    }
+    .card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        padding: 20px;
+    }
+    .card h2 {
+        margin-bottom: 20px;
+    }
+    .add-button {
+        display: inline-block;
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        margin-bottom: 20px;
+    }
+    .add-button:hover {
+        background-color: #218838;
+    }
+    .table-wrapper {
+        overflow-x: auto;
+    }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table th, .table td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    .table th {
+        background-color: #f8f9fa;
+    }
+    .table tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+    }
+    .action-buttons a, .action-buttons button {
+        background-color: #007bff;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .action-buttons a:hover, .action-buttons button:hover {
+        background-color: #0056b3;
+    }
+    .terms-card {
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-top: 20px;
+        height: 350px; /* Reduced height to fit Gantt chart nicely */
+    }
+    .terms-card h3 {
+        margin-bottom: 20px;
+    }
+    .gantt-chart {
+        width: 100%;
+        height: 300px; /* Adjusted height for Gantt chart */
+    }
 </style>
 @endpush
 @section('sidebar')
@@ -94,39 +168,39 @@
 @endsection
 
 @section('content')
-<div class="container mt-4">
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <h2 class="mb-4" style="font-size: 1.5rem;">School Years</h2>
-            <a href="{{ route('headmaster.school-years.create') }}" class="btn btn-primary mb-3">Add New School Year</a>
+<div class="content-wrapper">
+    <div class="card">
+        <h2>School Years</h2>
+        <a href="{{ route('headmaster.school-years.create') }}" class="add-button">Add New School Year</a>
 
-            @if(session('error'))
-                <script>
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: '{{ session('error') }}',
-                    });
-                </script>
-            @endif
+        @if(session('error'))
+            <script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '{{ session('error') }}',
+                });
+            </script>
+        @endif
 
-            @if(session('success'))
-                <script>
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: '{{ session('success') }}',
-                    });
-                </script>
-            @endif
+        @if(session('success'))
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: '{{ session('success') }}',
+                });
+            </script>
+        @endif
 
-            <table class="table mt-3">
+        <div class="table-wrapper">
+            <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col">School Year Name</th>
-                        <th scope="col">Start Date</th>
-                        <th scope="col">End Date</th>
-                        <th scope="col">Actions</th>
+                        <th>School Year Name</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -135,12 +209,12 @@
                             <td>{{ $year->name }}</td>
                             <td>{{ $year->start_date }}</td>
                             <td>{{ $year->end_date }}</td>
-                            <td>
-                                <a href="{{ route('headmaster.school-years.edit', $year->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                                <form id="delete-form-{{ $year->id }}" action="{{ route('headmaster.school-years.destroy', $year->id) }}" method="POST" class="d-inline">
+                            <td class="action-buttons">
+                                <a href="{{ route('headmaster.school-years.edit', $year->id) }}">Edit</a>
+                                <form id="delete-form-{{ $year->id }}" action="{{ route('headmaster.school-years.destroy', $year->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete({{ $year->id }})">Delete</button>
+                                    <button type="button" onclick="confirmDelete({{ $year->id }})">Delete</button>
                                 </form>
                             </td>
                         </tr>
@@ -149,7 +223,22 @@
             </table>
         </div>
     </div>
+
+    <div class="terms-card">
+        <h3>Terms for Selected School Year</h3>
+        <div id="gantt_chart" class="gantt-chart"></div>
+    </div>
 </div>
+
+@endsection
+@push('scripts')
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+    function toggleSubmenu(id) {
+        const submenu = document.getElementById(id);
+        submenu.classList.toggle('show');
+    }
+</script>
 
 <script>
     function confirmDelete(id) {
@@ -167,30 +256,55 @@
             }
         });
     }
-</script>
-@endsection
 
-@section('styles')
-<style>
-    .container {
-        max-width: 1200px;
-    }
-    .card {
-        border-radius: 10px;
-    }
-    .card-body {
-        padding: 20px;
-    }
-    .table th, .table td {
-        vertical-align: middle;
-    }
-</style>
-@endsection
-@push('scripts')
-<script>
-    function toggleSubmenu(id) {
-        const submenu = document.getElementById(id);
-        submenu.classList.toggle('show');
+    google.charts.load('current', {'packages':['gantt']});
+    google.charts.setOnLoadCallback(drawChart);
+
+    function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Task ID');
+        data.addColumn('string', 'Task Name');
+        data.addColumn('string', 'Resource');
+        data.addColumn('date', 'Start Date');
+        data.addColumn('date', 'End Date');
+        data.addColumn('number', 'Duration');
+        data.addColumn('number', 'Percent Complete');
+        data.addColumn('string', 'Dependencies');
+
+        data.addRows([
+            ['Term1', 'Term 1', 'term', new Date(2024, 0, 1), new Date(2024, 3, 1), null, 100, null],
+            ['Term2', 'Term 2', 'term', new Date(2024, 4, 1), new Date(2024, 7, 1), null, 100, null],
+            ['Term3', 'Term 3', 'term', new Date(2024, 8, 1), new Date(2024, 11, 1), null, 100, null]
+        ]);
+
+        var options = {
+            height: 300, // Adjusted height for Gantt chart
+            gantt: {
+                trackHeight: 30,
+                barHeight: 20, // Adjust bar height for better fit
+                palette: [
+                    {
+                        "color": "#1b9e77",
+                        "dark": "#1b9e77",
+                        "light": "#1b9e77"
+                    },
+                    {
+                        "color": "#d95f02",
+                        "dark": "#d95f02",
+                        "light": "#d95f02"
+                    },
+                    {
+                        "color": "#7570b3",
+                        "dark": "#7570b3",
+                        "light": "#7570b3"
+                    }
+                ]
+            }
+        };
+
+        var chart = new google.visualization.Gantt(document.getElementById('gantt_chart'));
+
+        chart.draw(data, options);
     }
 </script>
 @endpush

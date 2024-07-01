@@ -27,12 +27,17 @@
             justify-content: space-between;
             align-items: center;
             z-index: 1030;
+            position: fixed;
+            width: 100%;
+            top: 0;
         }
         .navbar .navbar-toggler {
             color: #6a0dad;
             border: none;
         }
         .navbar .form-inline {
+            display: flex;
+            align-items: center;
             flex-grow: 1;
             justify-content: center;
         }
@@ -54,10 +59,11 @@
         .navbar .navbar-nav {
             display: flex;
             align-items: center;
+            margin-left: 20px;
         }
         .navbar .nav-item .nav-link {
             color: #6a0dad;
-            margin-right: 20px;
+            margin-left: 10px;
             display: flex;
             align-items: center;
             text-decoration: none; /* Remove underlining */
@@ -78,9 +84,21 @@
             color: #6a0dad;
             font-size: 1.5rem;
         }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            font-size: 1.5em;
+            color: #6a0dad;
+            width: 100%;
+            position: fixed;
+            top: 56px; /* Adjusted to be below the navbar */
+            z-index: 1020;
+        }
         .container-fluid {
             background-color: #f8f9fa;
-            padding-top: 70px; /* Adjusted to avoid overlap with the fixed navbar */
+            padding-top: 120px; /* Adjusted to avoid overlap with the fixed navbar and header */
         }
     </style>
 </head>
@@ -99,30 +117,34 @@
                     <button class="navbar-toggler" id="menu-toggle">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <form class="form-inline mx-auto my-2 my-lg-0">
+                    <div class="form-inline mx-auto my-2 my-lg-0">
                         <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
                         <button class="btn my-2 my-sm-0" type="submit">Search</button>
-                    </form>
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">
-                                <i class="fas fa-user-circle"></i> {{ Auth::user()->name }}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('logout') }}"
-                               onclick="event.preventDefault();
-                               document.getElementById('logout-form').submit();">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </a>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                @csrf
-                            </form>
-                        </li>
-                    </ul>
+                        <ul class="navbar-nav ml-3">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">
+                                    <i class="fas fa-user-circle"></i> {{ Auth::user()->name }}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('logout') }}"
+                                   onclick="event.preventDefault();
+                                   document.getElementById('logout-form').submit();">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </nav>
 
-                <div class="container-fluid pt-5 mt-5">
+                <div class="header">
+                    Welcome to Smart School Management System
+                </div>
+
+                <div class="container-fluid">
                     @yield('content')
                 </div>
             </div>
